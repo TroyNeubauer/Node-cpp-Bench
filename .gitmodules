@@ -1,3 +1,6 @@
 [submodule "vendor/TUtil"]
 	path = vendor/TUtil
 	url = https://github.com/TroyNeubauer/TUtil.git
+[submodule "vendor/spdlog"]
+	path = vendor/spdlog
+	url = https://github.com/TroyNeubauer/spdlog.git

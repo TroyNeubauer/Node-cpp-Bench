@@ -48,7 +48,9 @@ project "Test"
 
 	includedirs
 	{
-		"vendor/TUtil/TUtil/include"
+		"vendor/TUtil/TUtil/include",
+		"vendor/spdlog/include",
+		"vendor/catch2",
 	}
 
 	links 
