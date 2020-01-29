@@ -1,3 +1,9 @@
+
+node/node_modules
+temp.txt
+200m.txt
+20m.txt
+
 # Directories
 **/.vs/
 **/bin/

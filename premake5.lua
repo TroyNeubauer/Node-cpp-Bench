@@ -26,12 +26,13 @@ workspace "NodeCppBench"
 		"Release",
 	}
 
+	staticruntime "On"
+
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 include "vendor/TUtil/TUtil_project.lua"
 
 project "Test"
-	location "Test"
 	kind "ConsoleApp"
 	language "C++"
 	cppdialect "C++17"
@@ -62,6 +63,11 @@ project "Test"
 	{
 	}
 
+	filter "system:windows"
+		links
+		{
+			"Pdh.lib",
+		}
 
 
 	filter "configurations:Debug"
