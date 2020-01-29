@@ -1,0 +1,33 @@
+# Directories
+**/.vs/
+**/bin/
+!vendor/bin/
+**/bin-int/
+**/peda-session*
+
+# Files
+*.user
+**/*.TMP
+**/*.xcodeproj
+**/*.xcworkspace
+
+**/.DS_Store
+
+
+#MSVC
+**/*.sln
+**/*.vcxproj
+**/*.vcxproj.user
+**/*.vcxproj.filters
+
+#make
+**/Makefile
+**/.project
+**/.workspace
+**/Makefile
+
+**/.gdb_history
+
+#Eclipse
+**/.cproject
+.settings/
