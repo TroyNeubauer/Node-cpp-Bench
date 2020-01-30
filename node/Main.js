@@ -17,60 +17,52 @@ function CopyBench(name)
 
 suite.add('read 5k.json', function()
 {
-	ReadBench("../5k.json");
+	ReadBench("../samples/5k.json");
 })
 .add('read 50k.json', function()
 {
-	ReadBench("../50k.json");
+	ReadBench("../samples/50k.json");
 })
 .add('read 500k.json', function()
 {
-	ReadBench("../500k.json");
+	ReadBench("../samples/500k.json");
 })
 .add('read 2m.json', function()
 {
-	ReadBench("../2m.json");
+	ReadBench("../samples/2m.json");
 })
 .add('read 20m.txt', function()
 {
-	ReadBench("../20m.txt");
+	ReadBench("../samples/20m.txt");
 })
 .add('read 60m.txt', function()
 {
-	ReadBench("../60m.txt");
-})
-.add('read 100m.txt', function()
-{
-	ReadBench("../100m.txt");
+	ReadBench("../samples/60m.txt");
 })
 //========== COPY ==========
 .add('copy 5k.json', function()
 {
-	CopyBench("../5k.json");
+	CopyBench("../samples/5k.json");
 })
 .add('copy 50k.json', function()
 {
-	CopyBench("../50k.json");
+	CopyBench("../samples/50k.json");
 })
 .add('copy 500k.json', function()
 {
-	CopyBench("../500k.json");
+	CopyBench("../samples/500k.json");
 })
 .add('copy 2m.json', function()
 {
-	CopyBench("../2m.json");
+	CopyBench("../samples/2m.json");
 })
 .add('copy 20m.txt', function()
 {
-	CopyBench("../20m.txt");
+	CopyBench("../samples/20m.txt");
 })
 .add('copy 60m.txt', function()
 {
-	CopyBench("../60m.txt");
-})
-.add('copy 100m.txt', function()
-{
-	CopyBench("../100m.txt");
+	CopyBench("../samples/60m.txt");
 })
 suite.on('cycle', function(event) {
 	console.log(event.target.toString() + " | " + new Number(event.target.stats.mean * 1000).toPrecision(4) + "ms");

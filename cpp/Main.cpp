@@ -53,20 +53,15 @@ int main(int argc, char* const argv[])
 	logger = new spdlog::logger("CPP", { coreStdOut });
 
 	if (TUtil::FileSystem::Exists("samples/20m.txt"))
-		logger->info("Using cached 20mb, 60mb and 100mb files");
+		logger->info("Using cached 20mb and 60mb files");
 	else
 	{
 		logger->info("Creating files:");
 		CopyFileWithTimes("samples/20m.txt", 10);
 		CopyFileWithTimes("samples/60m.txt", 30);
-		CopyFileWithTimes("samples/100m.txt", 50);
 	}
 
 	int result = Catch::Session().run(argc, argv);
-
-#ifdef _MSC_VER
-	system("PAUSE");
-#endif
 
 	return result;
 }
@@ -217,7 +212,6 @@ TestFunction("read | C-buffered | 500k.json", ReadBufferedC, "samples/500k.json"
 TestFunction("read | C-buffered | 2m.json", ReadBufferedC, "samples/2m.json")
 TestFunction("read | C-buffered | 20m.txt", ReadBufferedC, "samples/20m.txt")
 TestFunction("read | C-buffered | 60m.txt", ReadBufferedC, "samples/60m.txt")
-TestFunction("read | C-buffered | 100m.txt", ReadBufferedC, "samples/100m.txt")
 
 TestFunction("read | C-All | 5k.json", ReadAllC, "samples/5k.json")
 TestFunction("read | C-All | 50k.json", ReadAllC, "samples/50k.json")
@@ -225,7 +219,6 @@ TestFunction("read | C-All | 500k.json", ReadAllC, "samples/500k.json")
 TestFunction("read | C-All | 2m.json", ReadAllC, "samples/2m.json")
 TestFunction("read | C-All | 20m.txt", ReadAllC, "samples/20m.txt")
 TestFunction("read | C-All | 60m.txt", ReadAllC, "samples/60m.txt")
-TestFunction("read | C-All | 100m.txt", ReadAllC, "samples/100m.txt")
 
 TestFunction("read | TUtil-Mapped | 5k.json", ReadMappedTUtil, "samples/5k.json")
 TestFunction("read | TUtil-Mapped | 50k.json", ReadMappedTUtil, "samples/50k.json")
@@ -233,7 +226,6 @@ TestFunction("read | TUtil-Mapped | 500k.json", ReadMappedTUtil, "samples/500k.j
 TestFunction("read | TUtil-Mapped | 2m.json", ReadMappedTUtil, "samples/2m.json")
 TestFunction("read | TUtil-Mapped | 20m.txt", ReadMappedTUtil, "samples/20m.txt")
 TestFunction("read | TUtil-Mapped | 60m.txt", ReadMappedTUtil, "samples/60m.txt")
-TestFunction("read | TUtil-Mapped | 100m.txt", ReadMappedTUtil, "samples/100m.txt")
 
 //========== COPY ==========
 
@@ -243,7 +235,6 @@ TestFunction("copy | C-buffered | 500k.json", CopyBufferedC, "samples/500k.json"
 TestFunction("copy | C-buffered | 2m.json", CopyBufferedC, "samples/2m.json")
 TestFunction("copy | C-buffered | 20m.txt", CopyBufferedC, "samples/20m.txt")
 TestFunction("copy | C-buffered | 60m.txt", CopyBufferedC, "samples/60m.txt")
-TestFunction("copy | C-buffered | 100m.txt", CopyBufferedC, "samples/100m.txt")
 
 TestFunction("copy | C-All | 5k.json", CopyAllC, "samples/5k.json")
 TestFunction("copy | C-All | 50k.json", CopyAllC, "samples/50k.json")
@@ -251,7 +242,6 @@ TestFunction("copy | C-All | 500k.json", CopyAllC, "samples/500k.json")
 TestFunction("copy | C-All | 2m.json", CopyAllC, "samples/2m.json")
 TestFunction("copy | C-All | 20m.txt", CopyAllC, "samples/20m.txt")
 TestFunction("copy | C-All | 60m.txt", CopyAllC, "samples/60m.txt")
-TestFunction("copy | C-All | 100m.txt", CopyAllC, "samples/100m.txt")
 
 TestFunction("copy | TUtil-Mapped | 5k.json", CopyMappedTUtil, "samples/5k.json")
 TestFunction("copy | TUtil-Mapped | 50k.json", CopyMappedTUtil, "samples/50k.json")
@@ -259,7 +249,6 @@ TestFunction("copy | TUtil-Mapped | 500k.json", CopyMappedTUtil, "samples/500k.j
 TestFunction("copy | TUtil-Mapped | 2m.json", CopyMappedTUtil, "samples/2m.json")
 TestFunction("copy | TUtil-Mapped | 20m.txt", CopyMappedTUtil, "samples/20m.txt")
 TestFunction("copy | TUtil-Mapped | 60m.txt", CopyMappedTUtil, "samples/60m.txt")
-TestFunction("copy | TUtil-Mapped | 100m.txt", CopyMappedTUtil, "samples/100m.txt")
 
 //========== JSON ==========
 
