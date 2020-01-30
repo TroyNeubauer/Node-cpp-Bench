@@ -55,6 +55,7 @@ print('')
 print('osName ' + osName)
 print('compiler ' + compiler)
 print('')
+run('ls -la')
 print('')
 
 

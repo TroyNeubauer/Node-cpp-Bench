@@ -24,7 +24,12 @@ addons:
     packages:
       - gcc-9
       - g++-9
-
+      - e2fslibs-dev
+      - nettle-dev
+      - acl-dev
+      - libghc-bzlib-dev
+      - lzma-dev
+      - libroslz4-dev
 install:
   - |
     if [ $TRAVIS_OS_NAME == "linux" ]
