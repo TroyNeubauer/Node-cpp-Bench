@@ -42,4 +42,4 @@ install:
     fi
 
 script:
-  - python run.py $TRAVIS_OS_NAME $COMPILER
+  - python run.py $TRAVIS_OS_NAME-travis $COMPILER

@@ -32,6 +32,8 @@ def copyALlInDir(src, dest):
 			copy_file(os.path.join(root, name), destFile)
 
 
+CI = False
+
 if len(sys.argv) != 3:
 	print("Command line arguments either incorrect or not specifyed. Reverting to defaults")
 	osName = platform.system().lower()
@@ -49,14 +51,14 @@ else:
 	print("Using command line arguments!")
 	osName = sys.argv[1]
 	compiler = sys.argv[2]
-
+	if "-travis" in osName:
+		osName = osName[:-len("-travis")]
+		CI = True
+		print("Detected CI enviorment")
 
 print('')
 print('osName ' + osName)
 print('compiler ' + compiler)
-print('')
-if osName != "windows":
-	run('ls -la')
 print('')
 
 
@@ -78,7 +80,10 @@ else:
 
 
 if compiler == 'msvc':
-	premakeCommand += '--os=windows --compiler=msc vs2019'
+	if CI:
+		premakeCommand += '--os=windows --compiler=msc vs2017'
+	else:
+		premakeCommand += '--os=windows --compiler=msc vs2019'
 
 elif compiler == 'gcc':
 	premakeCommand += '--os=' + osName + ' --compiler=gcc gmake2'
@@ -117,7 +122,10 @@ env["PATH"] = ''
 
 
 if osName == 'windows':
-	env["PATH"] += "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\MSBuild\\Current\\Bin" + s
+	if CI:
+		env["PATH"] += "c:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\BuildTools\\MSBuild\\15.0\\Bin" + s
+	else:
+		env["PATH"] += "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\MSBuild\\Current\\Bin" + s
 
 env["PATH"] += origionalPath
 
