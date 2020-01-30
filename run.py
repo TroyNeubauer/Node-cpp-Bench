@@ -139,9 +139,9 @@ command = "bin" + s + "Release-" + osName + "-x86_64" + s + "Test" + s + "Test"
 
 run(command)
 
-if osName = "windows":
+if osName == "windows":
 	sudoPrefix = ""
-else
+else:
 	sudoPrefix = "sudo "
 
 #install python dependencies
