@@ -9,7 +9,7 @@ samples/100m.txt
 # Directories
 **/.vs/
 **/bin/
-!vendor/bin/
+!premake/bin/
 **/bin-int/
 **/peda-session*
 
