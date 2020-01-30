@@ -55,7 +55,8 @@ print('')
 print('osName ' + osName)
 print('compiler ' + compiler)
 print('')
-run('ls -la')
+if osName != "windows":
+	run('ls -la')
 print('')
 
 
@@ -114,10 +115,6 @@ env = os.environ.copy()
 origionalPath = env["PATH"]
 env["PATH"] = ''
 
-if compiler == 'emcc':
-	env["PATH"] += os.path.join(os.getcwd(), 'Hazel/emsdk-master') + s;
-	env["PATH"] += os.path.join(os.getcwd(), 'Hazel/emsdk-master/node/12.9.1_64bit/bin') + s
-	env["PATH"] += os.path.join(os.getcwd(), 'Hazel/emsdk-master/fastcomp/emscripten') + s
 
 if osName == 'windows':
 	env["PATH"] += "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\MSBuild\\Current\\Bin" + s
@@ -133,9 +130,19 @@ print('env: ' + str(env))
 #Compile
 run(command, env)
 
+if osName == 'windows':
+	s = '\\'
+else:
+	s = '/'
 
+command = "bin" + s + "Release-" + osName + "-x86_64" + s + "Test" + s + "Test"
 
+run(command)
 
+if osName = "windows":
+	sudoPrefix = ""
+else
+	sudoPrefix = "sudo "
 
 #install python dependencies
-run("pip install plotly")
+run(sudoPrefix + "pip install plotly")
