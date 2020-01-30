@@ -16,6 +16,32 @@ spdlog::logger* logger;
 char* buf;
 const int BUF_SIZE = 1024 * 1024;
 
+void CopyFile(const char* fileName, int times)
+{
+	logger->info("Copying file {} {} times", fileName, times);
+
+	std::uint64_t size;
+	TUtil::FileError error;
+	const char* baseFileName = "2m.json";
+	const char* file = reinterpret_cast<const char*>(TUtil::FileSystem::MapFile(baseFileName, TUtil::READ, size, &error));
+
+	if (error != TUtil::FileError::NONE)
+	{
+		logger->error("Error while reading file {}, Error: {}", baseFileName, TUtil::FileErrorToString(error));
+	}
+
+	FILE* out = fopen(fileName, "wb");
+	if (!out) logger->error("Cannot open file {}", fileName);
+	else
+	{
+		for (int i = 0; i < times; i++)
+		{
+			fwrite(file, 1, size, out);
+		}
+		fclose(out);
+	}
+}
+
 int main(int argc, char* const argv[])
 {
 	buf = new char[BUF_SIZE];
@@ -26,44 +52,14 @@ int main(int argc, char* const argv[])
 
 	logger = new spdlog::logger("CPP", { coreStdOut });
 
-	if (TUtil::FileSystem::Exists("200m.txt"))
-		logger->info("Using cached 200mb file");
+	if (TUtil::FileSystem::Exists("20m.txt"))
+		logger->info("Using cached 20mb, 60mb and 100mb files");
 	else
 	{
-		std::uint64_t size;
-		TUtil::FileError error;
-		const char* fileName = "2m.json";
-		const char* file = reinterpret_cast<const char*>(TUtil::FileSystem::MapFile(fileName, TUtil::READ, size, &error));
-
-		if (error != TUtil::FileError::NONE)
-		{
-			logger->error("Error while reading file {}, Error: {}", fileName, TUtil::FileErrorToString(error));
-		}
-
-		TUtil::FileSystem::Delete("temp.txt");
-		FILE* out = fopen("200m.txt", "wb");
-		if (!out) logger->error("Cannot open file {}", "200m.txt");
-		else
-		{
-			for (int i = 0; i < 100; i++)
-			{
-				fwrite(file, 1, size, out);
-			}
-			fclose(out);
-		}
-
-		out = fopen("20m.txt", "wb");
-		if (!out) logger->error("Cannot open file {}", "20m.txt");
-		else
-		{
-			for (int i = 0; i < 10; i++)
-			{
-				fwrite(file, 1, size, out);
-			}
-			fclose(out);
-		}
-
-		TUtil::FileSystem::UnmapFile(file);
+		logger->info("Creating files:");
+		CopyFile("20m.txt", 10);
+		CopyFile("60m.txt", 30);
+		CopyFile("100m.txt", 50);
 	}
 
 	int result = Catch::Session().run(argc, argv);
@@ -117,23 +113,38 @@ const char* CopyBenchTUtil(const char* fileName)
 
 //C file IO
 
-const char* ReadBenchC(const char* fileName)
+const char* ReadBenchBufferedC(const char* fileName)
 {
-	std::uint64_t size;
-	TUtil::FileError error;
-	const char* file = reinterpret_cast<const char*>(TUtil::FileSystem::MapFile(fileName, TUtil::READ, size, &error));
+	std::uint64_t size = TUtil::FileSystem::FileSize(fileName);
 
-	if (error != TUtil::FileError::NONE)
+	char* buf = new char[1024 * 1024];
+	std::size_t bytesRead;
+	FILE* file = fopen(fileName, "rb");
+	do
 	{
-		logger->error("Error while reading file {}, Error: {}", fileName, TUtil::FileErrorToString(error));
-	}
+		bytesRead = fread(buf, 1, 1024 * 1024, file);
 
-	TUtil::FileSystem::UnmapFile(file);
+	} while(bytesRead);
 
-	return file;
+	fclose(file);
+	delete[] buf;
+	return nullptr;
 }
 
-const char* CopyBenchC(const char* fileName)
+const char* ReadBenchAllC(const char* fileName)
+{
+	std::uint64_t size = TUtil::FileSystem::FileSize(fileName);
+	char* buf = new char[size];
+
+	FILE* file = fopen(fileName, "rb");
+	fread(buf, 1, size, file);
+	fclose(file);
+
+	delete[] buf;
+	return nullptr;
+}
+
+const char* CopyBenchBufferedC(const char* fileName)
 {
 	std::size_t bytesRead;
 	FILE* in = fopen(fileName, "rb");
@@ -147,82 +158,48 @@ const char* CopyBenchC(const char* fileName)
 		bytesRead = fread(buf, 1, BUF_SIZE, in);
 		fwrite(buf, 1, bytesRead, out);
 
-	} while (bytesRead > 0);
+	} while (bytesRead);
 	fclose(out);
 	fclose(in);
 	
 	return nullptr;
 }
 
-#define ReadBench(name) ReadBenchTUtil(name);
-#define CopyBench(name) CopyBenchC(name);
-
-TEST_CASE()
+const char* CopyBenchAllC(const char* fileName)
 {
-	BENCHMARK("read 50k.json")
-	{
-		return ReadBench("50k.json");
-	};
-	
-	BENCHMARK("read 500k.json")
-	{
-		return ReadBench("500k.json");
-	};
-	
-	BENCHMARK("read 2m.json")
-	{
-		return ReadBench("50k.json");
-	};
+	std::size_t bytesRead;
+	FILE* in = fopen(fileName, "rb");
+	if (!in) logger->error("Cannot open file {}", fileName);
 
-	BENCHMARK("read 20m.txt")
-	{
-		return ReadBench("20m.txt");
-	};
+	FILE* out = fopen("temp.txt", "wb");
+	if (!out) logger->error("Cannot open file {}", "temp.txt");
 
-	BENCHMARK("read 200m.txt")
-	{
-		return ReadBench("200m.txt");
-	};
+	std::uint64_t size = TUtil::FileSystem::FileSize(fileName);
+	char* buf = new char[size];
 
-	//========== COPY ==========
-	BENCHMARK("copy 50k.json")
-	{
-		return CopyBench("50k.json");
-	};
+	FILE* file = fopen(fileName, "rb");
+	fread(buf, 1, size, in);
+	fwrite(buf, 1, size, out);
 
-	BENCHMARK("copy 500k.json")
-	{
-		return CopyBench("500k.json");
-	};
+	fclose(in);
+	fclose(out);
 
-	BENCHMARK("copy 2m.json")
-	{
-		return CopyBench("2m.json");
-	};
-
-	BENCHMARK("copy 20m.txt")
-	{
-		return CopyBench("20m.txt");
-	};
-
-	BENCHMARK("copy 200m.txt")
-	{
-		return CopyBench("200m.txt");
-	};
-	//========== JSON ==========
-
-
-	BENCHMARK("Parse Json")
-	{
-
-	};
-
-	BENCHMARK("Parse and Re-Stringify Json")
-	{
-
-	};
-
+	delete[] buf;
+	return nullptr;
 }
 
+#define TestFunction(name, function, ...)
+TEST_CASE(name) {
+	BENCHMARK(name)
+	{
+		return function(name, __VA_ARGS__);
+	};
+}
 
+template<> void TestFunction<ReadBenchBufferedC>("read C-buffered 5k.json", "5k.json");
+
+//========== COPY ==========
+
+
+//========== JSON ==========
 

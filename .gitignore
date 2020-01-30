@@ -1,8 +1,10 @@
 
 node/node_modules
 temp.txt
-200m.txt
+
 20m.txt
+60m.txt
+100m.txt
 
 # Directories
 **/.vs/
@@ -31,6 +33,7 @@ temp.txt
 **/.project
 **/.workspace
 **/Makefile
+**/*.make
 
 **/.gdb_history
 
