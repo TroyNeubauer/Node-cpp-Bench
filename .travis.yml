@@ -1,0 +1,40 @@
+language: cpp
+
+matrix:
+  include:
+    # Windows:
+    - os: windows
+      env:
+        - COMPILER=msvc
+    # Desktop Linux:
+    #Linux - GCC
+    - os: linux
+      env:
+        - COMPILER=gcc
+    #Linux - Clang
+    - os: linux
+      env:
+        - COMPILER=clang
+
+
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - gcc-9
+      - g++-9
+
+install:
+  - |
+    if [ $TRAVIS_OS_NAME == "linux" ]
+    then
+      wget https://github.com/premake/premake-core/releases/download/v5.0.0-alpha14/premake-5.0.0-alpha14-linux.tar.gz -O premake.tar.gz
+      tar -xf premake.tar.gz
+      chmod +x premake5
+      export PATH=$PATH:$(pwd)
+      gcc -v && g++ -v --version
+    fi
+
+script:
+  - python run.py $TRAVIS_OS_NAME $COMPILER

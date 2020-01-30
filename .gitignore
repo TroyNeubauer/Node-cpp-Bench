@@ -2,9 +2,9 @@
 node/node_modules
 temp.txt
 
-20m.txt
-60m.txt
-100m.txt
+samples/20m.txt
+samples/60m.txt
+samples/100m.txt
 
 # Directories
 **/.vs/
