@@ -1,4 +1,6 @@
 
+#include <malloc.h>
+
 #include <TUtil/TUtil.h>
 
 #include <spdlog/spdlog.h>
@@ -12,9 +14,9 @@
 #include <catch2/catch.hpp>
 
 
+#define ENABLE_LONG_BENCHMARKS 0
+
 spdlog::logger* logger;
-char* buf;
-const int BUF_SIZE = 1024 * 1024;
 
 void CopyFileWithTimes(const char* fileName, int times)
 {
@@ -42,15 +44,24 @@ void CopyFileWithTimes(const char* fileName, int times)
 	}
 }
 
+char* buf;
+const int BUF_SIZE = 1024 * 1024;
+
+
 int main(int argc, char* const argv[])
 {
-	buf = new char[BUF_SIZE];
-	std::string consolePattern = "%^[%T] %n: %$%v", filePattern = "%n-%t:[%D %H:%M %S.%e] %l: %v";
+	buf = static_cast<char*>(malloc(BUF_SIZE));
+	std::string pattern = "%^[%T] %n: %$%v";
 
 	auto coreStdOut = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
-	coreStdOut->set_pattern(consolePattern);
+	coreStdOut->set_pattern(pattern);
 
 	logger = new spdlog::logger("CPP", { coreStdOut });
+#ifdef BENCH_CI_BUILD
+	logger->set_level(spdlog::level::level_enum::off);
+#else
+	logger->info("Beginning C++ Bench program");
+#endif
 
 	if (TUtil::FileSystem::Exists("samples/20m.txt"))
 		logger->info("Using cached 20mb and 60mb files");
@@ -114,19 +125,17 @@ const char* ReadBufferedC(const char* fileName)
 {
 	std::uint64_t size = TUtil::FileSystem::FileSize(fileName);
 
-	char* buf = new char[1024 * 1024];
 	std::size_t bytesRead;
 	FILE* file = fopen(fileName, "rb");
 	if (!file) { logger->error("Cannot open file {}", fileName); return nullptr; }
 
 	do
 	{
-		bytesRead = fread(buf, 1, 1024 * 1024, file);
+		bytesRead = fread(buf, 1, BUF_SIZE, file);
 
 	} while(bytesRead);
 
 	fclose(file);
-	delete[] buf;
 	return nullptr;
 }
 
@@ -157,7 +166,7 @@ const char* CopyBufferedC(const char* fileName)
 const char* ReadAllC(const char* fileName)
 {
 	std::uint64_t size = TUtil::FileSystem::FileSize(fileName);
-	char* buf = new char[size];
+	char* buf = static_cast<char*>(malloc(size));
 
 	FILE* file = fopen(fileName, "rb");
 	if (!file) { logger->error("Cannot open file {}", fileName); return nullptr; }
@@ -165,7 +174,7 @@ const char* ReadAllC(const char* fileName)
 	fread(buf, 1, size, file);
 	fclose(file);
 
-	delete[] buf;
+	free(buf);
 	return nullptr;
 }
 
@@ -179,7 +188,7 @@ const char* CopyAllC(const char* fileName)
 	if (!out) logger->error("Cannot open file {}", "temp.txt");
 
 	std::uint64_t size = TUtil::FileSystem::FileSize(fileName);
-	char* buf = new char[size];
+	char* buf = static_cast<char*>(malloc(size));
 
 	FILE* file = fopen(fileName, "rb");
 	fread(buf, 1, size, in);
@@ -188,7 +197,7 @@ const char* CopyAllC(const char* fileName)
 	fclose(in);
 	fclose(out);
 
-	delete[] buf;
+	free(buf);
 	return nullptr;
 }
 
@@ -209,46 +218,58 @@ TEST_CASE(name) {								\
 TestFunction("read | C-buffered | 5k.json", ReadBufferedC, "samples/5k.json")
 TestFunction("read | C-buffered | 50k.json", ReadBufferedC, "samples/50k.json")
 TestFunction("read | C-buffered | 500k.json", ReadBufferedC, "samples/500k.json")
-TestFunction("read | C-buffered | 2m.json", ReadBufferedC, "samples/2m.json")
-TestFunction("read | C-buffered | 20m.txt", ReadBufferedC, "samples/20m.txt")
-TestFunction("read | C-buffered | 60m.txt", ReadBufferedC, "samples/60m.txt")
+#if ENABLE_LONG_BENCHMARKS
+	TestFunction("read | C-buffered | 2m.json", ReadBufferedC, "samples/2m.json")
+	TestFunction("read | C-buffered | 20m.txt", ReadBufferedC, "samples/20m.txt")
+	TestFunction("read | C-buffered | 60m.txt", ReadBufferedC, "samples/60m.txt")
+#endif
 
 TestFunction("read | C-All | 5k.json", ReadAllC, "samples/5k.json")
 TestFunction("read | C-All | 50k.json", ReadAllC, "samples/50k.json")
 TestFunction("read | C-All | 500k.json", ReadAllC, "samples/500k.json")
-TestFunction("read | C-All | 2m.json", ReadAllC, "samples/2m.json")
-TestFunction("read | C-All | 20m.txt", ReadAllC, "samples/20m.txt")
-TestFunction("read | C-All | 60m.txt", ReadAllC, "samples/60m.txt")
+#if ENABLE_LONG_BENCHMARKS
+	TestFunction("read | C-All | 2m.json", ReadAllC, "samples/2m.json")
+	TestFunction("read | C-All | 20m.txt", ReadAllC, "samples/20m.txt")
+	TestFunction("read | C-All | 60m.txt", ReadAllC, "samples/60m.txt")
+#endif
 
 TestFunction("read | TUtil-Mapped | 5k.json", ReadMappedTUtil, "samples/5k.json")
 TestFunction("read | TUtil-Mapped | 50k.json", ReadMappedTUtil, "samples/50k.json")
 TestFunction("read | TUtil-Mapped | 500k.json", ReadMappedTUtil, "samples/500k.json")
-TestFunction("read | TUtil-Mapped | 2m.json", ReadMappedTUtil, "samples/2m.json")
-TestFunction("read | TUtil-Mapped | 20m.txt", ReadMappedTUtil, "samples/20m.txt")
-TestFunction("read | TUtil-Mapped | 60m.txt", ReadMappedTUtil, "samples/60m.txt")
+#if ENABLE_LONG_BENCHMARKS
+	TestFunction("read | TUtil-Mapped | 2m.json", ReadMappedTUtil, "samples/2m.json")
+	TestFunction("read | TUtil-Mapped | 20m.txt", ReadMappedTUtil, "samples/20m.txt")
+	TestFunction("read | TUtil-Mapped | 60m.txt", ReadMappedTUtil, "samples/60m.txt")
+#endif
 
 //========== COPY ==========
 
 TestFunction("copy | C-buffered | 5k.json", CopyBufferedC, "samples/5k.json")
 TestFunction("copy | C-buffered | 50k.json", CopyBufferedC, "samples/50k.json")
 TestFunction("copy | C-buffered | 500k.json", CopyBufferedC, "samples/500k.json")
-TestFunction("copy | C-buffered | 2m.json", CopyBufferedC, "samples/2m.json")
-TestFunction("copy | C-buffered | 20m.txt", CopyBufferedC, "samples/20m.txt")
-TestFunction("copy | C-buffered | 60m.txt", CopyBufferedC, "samples/60m.txt")
+#if ENABLE_LONG_BENCHMARKS
+	TestFunction("copy | C-buffered | 2m.json", CopyBufferedC, "samples/2m.json")
+	TestFunction("copy | C-buffered | 20m.txt", CopyBufferedC, "samples/20m.txt")
+	TestFunction("copy | C-buffered | 60m.txt", CopyBufferedC, "samples/60m.txt")
+#endif
 
 TestFunction("copy | C-All | 5k.json", CopyAllC, "samples/5k.json")
 TestFunction("copy | C-All | 50k.json", CopyAllC, "samples/50k.json")
 TestFunction("copy | C-All | 500k.json", CopyAllC, "samples/500k.json")
-TestFunction("copy | C-All | 2m.json", CopyAllC, "samples/2m.json")
-TestFunction("copy | C-All | 20m.txt", CopyAllC, "samples/20m.txt")
-TestFunction("copy | C-All | 60m.txt", CopyAllC, "samples/60m.txt")
+#if ENABLE_LONG_BENCHMARKS
+	TestFunction("copy | C-All | 2m.json", CopyAllC, "samples/2m.json")
+	TestFunction("copy | C-All | 20m.txt", CopyAllC, "samples/20m.txt")
+	TestFunction("copy | C-All | 60m.txt", CopyAllC, "samples/60m.txt")
+#endif
 
 TestFunction("copy | TUtil-Mapped | 5k.json", CopyMappedTUtil, "samples/5k.json")
 TestFunction("copy | TUtil-Mapped | 50k.json", CopyMappedTUtil, "samples/50k.json")
 TestFunction("copy | TUtil-Mapped | 500k.json", CopyMappedTUtil, "samples/500k.json")
-TestFunction("copy | TUtil-Mapped | 2m.json", CopyMappedTUtil, "samples/2m.json")
-TestFunction("copy | TUtil-Mapped | 20m.txt", CopyMappedTUtil, "samples/20m.txt")
-TestFunction("copy | TUtil-Mapped | 60m.txt", CopyMappedTUtil, "samples/60m.txt")
+#if ENABLE_LONG_BENCHMARKS
+	TestFunction("copy | TUtil-Mapped | 2m.json", CopyMappedTUtil, "samples/2m.json")
+	TestFunction("copy | TUtil-Mapped | 20m.txt", CopyMappedTUtil, "samples/20m.txt")
+	TestFunction("copy | TUtil-Mapped | 60m.txt", CopyMappedTUtil, "samples/60m.txt")
+#endif
 
 //========== JSON ==========
 

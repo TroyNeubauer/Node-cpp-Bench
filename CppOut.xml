@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Catch name="Test">
+  <Group name="Test">
+    <TestCase name="read | C-buffered | 5k.json" filename="cpp/Main.cpp" line="218">
+      <BenchmarkResults name="read | C-buffered | 5k.json" samples="100" resamples="100000" iterations="6" clockResolution="23" estimatedDuration="2709000">
+        <!--All values in nano seconds-->
+        <mean value="4458" lowerBound="4404" upperBound="4582" ci="0.95"/>
+        <standardDeviation value="393.989" lowerBound="206.824" upperBound="754.96" ci="0.95"/>
+        <outliers variance="0.748441" lowMild="0" lowSevere="0" highMild="2" highSevere="4"/>
+      </BenchmarkResults>
+      <OverallResult success="true"/>
+    </TestCase>
+    <TestCase name="read | C-buffered | 50k.json" filename="cpp/Main.cpp" line="219">
+      <BenchmarkResults name="read | C-buffered | 50k.json" samples="100" resamples="100000" iterations="3" clockResolution="23" estimatedDuration="2637300">
+        <!--All values in nano seconds-->
+        <mean value="8684" lowerBound="8534" upperBound="9072" ci="0.95"/>
+        <standardDeviation value="1088.05" lowerBound="190.489" upperBound="1979.81" ci="0.95"/>
+        <outliers variance="0.862466" lowMild="0" lowSevere="0" highMild="1" highSevere="3"/>
+      </BenchmarkResults>
+      <OverallResult success="true"/>
+    </TestCase>
+    <TestCase name="read | C-buffered | 500k.json" filename="cpp/Main.cpp" line="220">
+      <BenchmarkResults name="read | C-buffered | 500k.json" samples="100" resamples="100000" iterations="1" clockResolution="23" estimatedDuration="5489700">
+        <!--All values in nano seconds-->
+        <mean value="66577" lowerBound="65391" upperBound="68390" ci="0.95"/>
+        <standardDeviation value="7308.97" lowerBound="5312.2" upperBound="12498.1" ci="0.95"/>
+        <outliers variance="0.821069" lowMild="0" lowSevere="0" highMild="1" highSevere="1"/>
+      </BenchmarkResults>
+      <OverallResult success="true"/>
+    </TestCase>
+    <TestCase name="read | C-All | 5k.json" filename="cpp/Main.cpp" line="227">
+      <BenchmarkResults name="read | C-All | 5k.json" samples="100" resamples="100000" iterations="7" clockResolution="23" estimatedDuration="2662800">
+        <!--All values in nano seconds-->
+        <mean value="3674" lowerBound="3632" upperBound="3815" ci="0.95"/>
+        <standardDeviation value="348.12" lowerBound="75.9071" upperBound="774.162" ci="0.95"/>
+        <outliers variance="0.769407" lowMild="0" lowSevere="0" highMild="0" highSevere="2"/>
+      </BenchmarkResults>
+      <OverallResult success="true"/>
+    </TestCase>
+    <TestCase name="read | C-All | 50k.json" filename="cpp/Main.cpp" line="228">
+      <BenchmarkResults name="read | C-All | 50k.json" samples="100" resamples="100000" iterations="4" clockResolution="23" estimatedDuration="2635600">
+        <!--All values in nano seconds-->
+        <mean value="6357" lowerBound="6258" upperBound="6609" ci="0.95"/>
+        <standardDeviation value="759.404" lowerBound="355.488" upperBound="1534.64" ci="0.95"/>
+        <outliers variance="0.842088" lowMild="0" lowSevere="0" highMild="0" highSevere="4"/>
+      </BenchmarkResults>
+      <OverallResult success="true"/>
+    </TestCase>
+    <TestCase name="read | C-All | 500k.json" filename="cpp/Main.cpp" line="229">
+      <BenchmarkResults name="read | C-All | 500k.json" samples="100" resamples="100000" iterations="1" clockResolution="23" estimatedDuration="4276600">
+        <!--All values in nano seconds-->
+        <mean value="47232" lowerBound="45617" upperBound="49783" ci="0.95"/>
+        <standardDeviation value="10199" lowerBound="7456.59" upperBound="16893.4" ci="0.95"/>
+        <outliers variance="0.946976" lowMild="0" lowSevere="0" highMild="2" highSevere="1"/>
+      </BenchmarkResults>
+      <OverallResult success="true"/>
+    </TestCase>
+    <TestCase name="read | TUtil-Mapped | 5k.json" filename="cpp/Main.cpp" line="236">
+      <BenchmarkResults name="read | TUtil-Mapped | 5k.json" samples="100" resamples="100000" iterations="8" clockResolution="23" estimatedDuration="2624800">
+        <!--All values in nano seconds-->
+        <mean value="3139" lowerBound="3074" upperBound="3268" ci="0.95"/>
+        <standardDeviation value="448.469" lowerBound="268.488" upperBound="769.679" ci="0.95"/>
+        <outliers variance="0.893797" lowMild="0" lowSevere="0" highMild="1" highSevere="7"/>
+      </BenchmarkResults>
+      <OverallResult success="true"/>
+    </TestCase>
+    <TestCase name="read | TUtil-Mapped | 50k.json" filename="cpp/Main.cpp" line="237">
+      <BenchmarkResults name="read | TUtil-Mapped | 50k.json" samples="100" resamples="100000" iterations="7" clockResolution="23" estimatedDuration="2438800">
+        <!--All values in nano seconds-->
+        <mean value="3239" lowerBound="3169" upperBound="3378" ci="0.95"/>
+        <standardDeviation value="481.187" lowerBound="299.413" upperBound="868.499" ci="0.95"/>
+        <outliers variance="0.894264" lowMild="0" lowSevere="0" highMild="2" highSevere="10"/>
+      </BenchmarkResults>
+      <OverallResult success="true"/>
+    </TestCase>
+    <TestCase name="read | TUtil-Mapped | 500k.json" filename="cpp/Main.cpp" line="238">
+      <BenchmarkResults name="read | TUtil-Mapped | 500k.json" samples="100" resamples="100000" iterations="7" clockResolution="23" estimatedDuration="2435300">
+        <!--All values in nano seconds-->
+        <mean value="3410" lowerBound="3320" upperBound="3605" ci="0.95"/>
+        <standardDeviation value="646.094" lowerBound="369.052" upperBound="1238.51" ci="0.95"/>
+        <outliers variance="0.936154" lowMild="0" lowSevere="0" highMild="0" highSevere="10"/>
+      </BenchmarkResults>
+      <OverallResult success="true"/>
+    </TestCase>
+    <TestCase name="copy | C-buffered | 5k.json" filename="cpp/Main.cpp" line="247">
+      <BenchmarkResults name="copy | C-buffered | 5k.json" samples="100" resamples="100000" iterations="1" clockResolution="23" estimatedDuration="12275600">
+        <!--All values in nano seconds-->
+        <mean value="154875" lowerBound="139604" upperBound="213110" ci="0.95"/>
+        <standardDeviation value="137179" lowerBound="25543.2" upperBound="321841" ci="0.95"/>
+        <outliers variance="0.989805" lowMild="0" lowSevere="0" highMild="9" highSevere="3"/>
+      </BenchmarkResults>
+      <OverallResult success="true"/>
+    </TestCase>
+    <TestCase name="copy | C-buffered | 50k.json" filename="cpp/Main.cpp" line="248">
+      <BenchmarkResults name="copy | C-buffered | 50k.json" samples="100" resamples="100000" iterations="1" clockResolution="23" estimatedDuration="37730900">
+        <!--All values in nano seconds-->
+        <mean value="327746" lowerBound="321828" upperBound="337633" ci="0.95"/>
+        <standardDeviation value="38125" lowerBound="24869.9" upperBound="66045.4" ci="0.95"/>
+        <outliers variance="0.841657" lowMild="0" lowSevere="1" highMild="1" highSevere="3"/>
+      </BenchmarkResults>
+      <OverallResult success="true"/>
+    </TestCase>
+    <TestCase name="copy | C-buffered | 500k.json" filename="cpp/Main.cpp" line="249">
+      <BenchmarkResults name="copy | C-buffered | 500k.json" samples="100" resamples="100000" iterations="1" clockResolution="23" estimatedDuration="240963800">
+        <!--All values in nano seconds-->
+        <mean value="2759833" lowerBound="2515230" upperBound="3525640" ci="0.95"/>
+        <standardDeviation value="1.97537e+06" lowerBound="604398" upperBound="4.31164e+06" ci="0.95"/>
+        <outliers variance="0.989701" lowMild="0" lowSevere="1" highMild="5" highSevere="12"/>
+      </BenchmarkResults>
+      <OverallResult success="true"/>
+    </TestCase>
+    <TestCase name="copy | C-All | 5k.json" filename="cpp/Main.cpp" line="256">
+      <BenchmarkResults name="copy | C-All | 5k.json" samples="100" resamples="100000" iterations="1" clockResolution="23" estimatedDuration="12641100">
+        <!--All values in nano seconds-->
+        <mean value="120035" lowerBound="117332" upperBound="124583" ci="0.95"/>
+        <standardDeviation value="17445.7" lowerBound="12026.8" upperBound="30852.7" ci="0.95"/>
+        <outliers variance="0.894008" lowMild="0" lowSevere="0" highMild="4" highSevere="1"/>
+      </BenchmarkResults>
+      <OverallResult success="true"/>
+    </TestCase>
+    <TestCase name="copy | C-All | 50k.json" filename="cpp/Main.cpp" line="257">
+      <BenchmarkResults name="copy | C-All | 50k.json" samples="100" resamples="100000" iterations="1" clockResolution="23" estimatedDuration="37863000">
+        <!--All values in nano seconds-->
+        <mean value="365679" lowerBound="328401" upperBound="460291" ci="0.95"/>
+        <standardDeviation value="267482" lowerBound="35952.4" upperBound="490748" ci="0.95"/>
+        <outliers variance="0.989714" lowMild="0" lowSevere="1" highMild="4" highSevere="3"/>
+      </BenchmarkResults>
+      <OverallResult success="true"/>
+    </TestCase>
+    <TestCase name="copy | C-All | 500k.json" filename="cpp/Main.cpp" line="258">
+      <BenchmarkResults name="copy | C-All | 500k.json" samples="100" resamples="100000" iterations="1" clockResolution="23" estimatedDuration="243705500">
+        <!--All values in nano seconds-->
+        <mean value="2778039" lowerBound="2569142" upperBound="3562430" ci="0.95"/>
+        <standardDeviation value="1.83346e+06" lowerBound="442586" upperBound="4.25106e+06" ci="0.95"/>
+        <outliers variance="0.989648" lowMild="0" lowSevere="1" highMild="4" highSevere="5"/>
+      </BenchmarkResults>
+      <OverallResult success="true"/>
+    </TestCase>
+    <TestCase name="copy | TUtil-Mapped | 5k.json" filename="cpp/Main.cpp" line="265">
+      <BenchmarkResults name="copy | TUtil-Mapped | 5k.json" samples="100" resamples="100000" iterations="1" clockResolution="23" estimatedDuration="11884700">
+        <!--All values in nano seconds-->
+        <mean value="115802" lowerBound="113262" upperBound="119930" ci="0.95"/>
+        <standardDeviation value="16102.6" lowerBound="10853.8" upperBound="29034.9" ci="0.95"/>
+        <outliers variance="0.883599" lowMild="9" lowSevere="0" highMild="4" highSevere="1"/>
+      </BenchmarkResults>
+      <OverallResult success="true"/>
+    </TestCase>
+    <TestCase name="copy | TUtil-Mapped | 50k.json" filename="cpp/Main.cpp" line="266">
+      <BenchmarkResults name="copy | TUtil-Mapped | 50k.json" samples="100" resamples="100000" iterations="1" clockResolution="23" estimatedDuration="35957600">
+        <!--All values in nano seconds-->
+        <mean value="319226" lowerBound="314075" upperBound="324128" ci="0.95"/>
+        <standardDeviation value="25536.7" lowerBound="19745.2" upperBound="37186.6" ci="0.95"/>
+        <outliers variance="0.707342" lowMild="0" lowSevere="1" highMild="5" highSevere="1"/>
+      </BenchmarkResults>
+      <OverallResult success="true"/>
+    </TestCase>
+    <TestCase name="copy | TUtil-Mapped | 500k.json" filename="cpp/Main.cpp" line="267">
+      <BenchmarkResults name="copy | TUtil-Mapped | 500k.json" samples="100" resamples="100000" iterations="1" clockResolution="23" estimatedDuration="246942200">
+        <!--All values in nano seconds-->
+        <mean value="2668474" lowerBound="2482664" upperBound="3356921" ci="0.95"/>
+        <standardDeviation value="1.62767e+06" lowerBound="378261" upperBound="3.77949e+06" ci="0.95"/>
+        <outliers variance="0.989588" lowMild="1" lowSevere="1" highMild="4" highSevere="1"/>
+      </BenchmarkResults>
+      <OverallResult success="true"/>
+    </TestCase>
+    <OverallResults successes="0" failures="0" expectedFailures="0"/>
+  </Group>
+  <OverallResults successes="0" failures="0" expectedFailures="0"/>
+</Catch>

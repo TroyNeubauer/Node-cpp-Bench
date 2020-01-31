@@ -12,11 +12,24 @@ newoption {
 }
 
 
+newoption {
+	trigger     = "ci",
+	description = "Used to indicate that this is a CI build",
+}
+
 workspace "NodeCppBench"
 	if _OPTIONS["compiler"] then
 		print("Using compiler ".._OPTIONS["compiler"])
 		toolset(_OPTIONS["compiler"])
 	end
+
+	if _OPTIONS["ci"] then
+		defines
+		{
+			"BENCH_CI_BUILD",
+		}
+	end
+
 	architecture "x64"
 	startproject "Test"
 

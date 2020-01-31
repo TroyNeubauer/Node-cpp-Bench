@@ -1,0 +1,23 @@
+{
+  "name": "node-cpp-bench",
+  "version": "1.0.0",
+  "description": "",
+  "main": "plotTest.js",
+  "dependencies": {
+    "plotly": "^1.0.6"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TroyNeubauer/Node-cpp-Bench.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/TroyNeubauer/Node-cpp-Bench/issues"
+  },
+  "homepage": "https://github.com/TroyNeubauer/Node-cpp-Bench#readme"
+}

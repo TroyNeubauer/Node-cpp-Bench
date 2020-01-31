@@ -23,6 +23,34 @@ def run(command, in_env = None):
 		print('Expected error code 0, got ' + str(exitCode))
 		sys.exit(1)
 
+def run_save_out(command, out_file, print_to_stdout = False, in_env = None):
+	process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, env=in_env)
+
+	if not print_to_stdout:
+		print("Running command \"" + command + "\" with output appending to \"" + out_file + "\". Dots will be printed to indicate progress")
+
+	file = open(out_file, "w")
+	# Poll process for new output until finished
+	while True:
+		nextline = process.stdout.readline()
+		if len(nextline) == 0 and process.poll() is not None:
+			break
+		string = nextline.decode("utf-8");
+		file.write(string)
+		if print_to_stdout:
+			sys.stdout.write(string)
+		else:
+			sys.stdout.write('.')
+
+	exitCode = process.returncode
+	file.close()
+
+	if exitCode != 0:
+		print('Command \'' + command + '\' failed!')
+		print('Expected error code 0, got ' + str(exitCode))
+		sys.exit(1)
+
+
 def copyALlInDir(src, dest):
 	for root, dirs, files in os.walk(src, topdown=False):
 		for name in files:
@@ -77,7 +105,7 @@ else:
 	print('Unknown OS! ' + osName)
 	sys.exit(1)
 
-
+premakeCommand += '--ci '
 
 if compiler == 'msvc':
 	if CI:
@@ -133,8 +161,6 @@ env.pop("CC", None)
 env.pop("CXX", None)
 env.pop("AR", None)
 
-print('env: ' + str(env))
-
 #Compile
 run(command, env)
 
@@ -145,15 +171,84 @@ else:
 
 command = "bin" + s + "Release-" + osName + "-x86_64" + s + "Test" + s + "Test"
 
-run(command)
+command += " -r xml"
+
+#run_save_out(command, "CppOut.xml")
+
+
+#Parse Cpp Output
+
+import xml.etree.ElementTree as ET
+root = ET.parse("CppOut.xml").getroot()
+
+data = {}
+
+for group in root.findall("Group"):
+	for case in group.findall("TestCase"):
+		name = case.attrib.get('name')
+		results = case.find("BenchmarkResults")
+		meanTag = results.find('mean')
+		mean = int(meanTag.attrib.get('value'))
+		data[name] = mean
 
 if osName == "windows":
 	sudoPrefix = ""
 else:
 	sudoPrefix = "sudo "
 
+graphs = {}
+
+for key, value in data.items():
+	parts = key.split(" | ")
+	if len(parts) != 3:
+		print("Test name \"" + key + "\" does not have 2 parts")
+		sys.exit(1)
+
+	graphName = parts[0]
+	strategy = parts[1]
+	operation = parts[2]
+
+	if not graphName in graphs:
+		graphs[graphName] = {}
+
+	if not strategy in graphs[graphName]:
+		graphs[graphName][strategy] = {}
+
+	if not operation in graphs[graphName][strategy]:
+		graphs[graphName][strategy][operation] = {}
+
+	graphs[graphName][strategy][operation]["mean"] = value
+
+
+import plotly.graph_objects as go
+
+
+plotBars = []
+
+
+#go.Bar(name='SF Zoo', x=animals, y=[20, 14, 23]),
+#go.Bar(name='LA Zoo', x=animals, y=[12, 18, 29])
+
+
+
+for graphName, strategies in graphs.items():
+	print("graph: " + graphName)
+	for stratName, operations in strategies.items():
+		
+		print("\txaxis: " + xAxis)
+
+
+
+#animals=['giraffes', 'orangutans', 'monkeys']
+
+#fig = go.Figure(data=plotBars)
+#fig.update_layout(barmode='group')
+#fig.show()
+
+
+
 #install python dependencies
-run(sudoPrefix + "pip install plotly")
+#run(sudoPrefix + "pip install plotly")
 
 
 
