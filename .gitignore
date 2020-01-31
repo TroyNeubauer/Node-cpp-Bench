@@ -7,6 +7,8 @@ samples/20m.txt
 samples/60m.txt
 samples/100m.txt
 
+out
+
 # Directories
 **/.vs/
 **/bin/

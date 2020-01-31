@@ -14,7 +14,7 @@
 #include <catch2/catch.hpp>
 
 
-#define ENABLE_LONG_BENCHMARKS 0
+#define ENABLE_LONG_BENCHMARKS 1
 
 spdlog::logger* logger;
 
@@ -42,6 +42,7 @@ void CopyFileWithTimes(const char* fileName, int times)
 		}
 		fclose(out);
 	}
+
 }
 
 char* buf;
@@ -74,6 +75,9 @@ int main(int argc, char* const argv[])
 
 	int result = Catch::Session().run(argc, argv);
 
+#ifndef BENCH_CI_BUILD
+	system("PAUSE");
+#endif
 	return result;
 }
 
@@ -123,7 +127,6 @@ const char* CopyMappedTUtil(const char* fileName)
 
 const char* ReadBufferedC(const char* fileName)
 {
-	std::uint64_t size = TUtil::FileSystem::FileSize(fileName);
 
 	std::size_t bytesRead;
 	FILE* file = fopen(fileName, "rb");
@@ -180,19 +183,20 @@ const char* ReadAllC(const char* fileName)
 
 const char* CopyAllC(const char* fileName)
 {
-	std::size_t bytesRead;
+	std::uint64_t size = TUtil::FileSystem::FileSize(fileName);
+
 	FILE* in = fopen(fileName, "rb");
 	if (!in) logger->error("Cannot open file {}", fileName);
 
 	FILE* out = fopen("temp.txt", "wb");
 	if (!out) logger->error("Cannot open file {}", "temp.txt");
 
-	std::uint64_t size = TUtil::FileSystem::FileSize(fileName);
+
 	char* buf = static_cast<char*>(malloc(size));
 
 	FILE* file = fopen(fileName, "rb");
-	fread(buf, 1, size, in);
-	fwrite(buf, 1, size, out);
+	if (fread(buf, 1, size, in) != size) REQUIRE_FALSE("File was not read fully!");
+	if (fwrite(buf, 1, size, out) != size) REQUIRE_FALSE("File was not written fully!");
 
 	fclose(in);
 	fclose(out);
@@ -252,6 +256,7 @@ TestFunction("copy | C-buffered | 500k.json", CopyBufferedC, "samples/500k.json"
 	TestFunction("copy | C-buffered | 20m.txt", CopyBufferedC, "samples/20m.txt")
 	TestFunction("copy | C-buffered | 60m.txt", CopyBufferedC, "samples/60m.txt")
 #endif
+
 
 TestFunction("copy | C-All | 5k.json", CopyAllC, "samples/5k.json")
 TestFunction("copy | C-All | 50k.json", CopyAllC, "samples/50k.json")

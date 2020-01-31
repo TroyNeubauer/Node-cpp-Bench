@@ -8,4 +8,5 @@ fig = go.Figure(data=[
 ])
 # Change the bar mode
 fig.update_layout(barmode='group')
-fig.show()
+fig.write_image("out/fig1.png")
+

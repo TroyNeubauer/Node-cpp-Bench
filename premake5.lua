@@ -41,6 +41,16 @@ workspace "NodeCppBench"
 
 	staticruntime "On"
 
+	filter "system:windows"
+		buildoptions
+		{
+			"/bigobj",
+		}
+		defines
+		{
+			"_CRT_SECURE_NO_WARNINGS",
+		}
+
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 include "vendor/TUtil/TUtil_project.lua"
