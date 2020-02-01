@@ -1,0 +1,24 @@
+{
+  "_id": "5e356d87861d9f9854669781",
+  "index": 0,
+  "isActive": true,
+  "balance": "$3,678.42",
+  "age": 27,
+  "eyeColor": "green",
+  "name": "Paula Odom",
+  "gender": "female",
+  "email": "paulaodom@kineticut.com",
+  "phone": "+1 (887) 538-3976",
+  "address": "400 Jodie Court, Cherokee, Montana, 1249",
+  "tags": [
+    "occaecat",
+    "ex",
+    "quis",
+    "laborum",
+    "sint",
+    "amet",
+    "erau"
+  ],
+  "greeting": "Hello, Paula Odom! You have 3 unread",
+  "favoriteFruit": "strawberry"
+}

@@ -3,9 +3,11 @@ node_modules
 node/node_modules
 temp.txt
 
+samples/5m.txt
+samples/10m.txt
 samples/20m.txt
+samples/40m.txt
 samples/60m.txt
-samples/100m.txt
 
 out
 

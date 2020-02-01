@@ -3,6 +3,7 @@ import os
 import platform
 import subprocess
 import shutil
+import copy
 from distutils.file_util import copy_file
 from distutils.dir_util import mkpath
 
@@ -153,7 +154,12 @@ env.pop("CXX", None)
 env.pop("AR", None)
 
 #Compile
-run(command, env)
+
+#TIME SWITCH
+reRun = True
+
+if reRun:
+	run(command, env)
 
 if osName == 'windows':
 	s = '\\'
@@ -164,7 +170,9 @@ command = "bin" + s + "Release-" + osName + "-x86_64" + s + "Test" + s + "Test"
 
 command += " -r xml"
 
-run_save_out(command, "out/CppBench.xml")
+
+if reRun:
+	run_save_out(command, "out/CppBench.xml")
 
 #Parse Cpp Output
 
@@ -182,7 +190,10 @@ for group in root.findall("Group"):
 		data[name] = mean
 
 
-run_save_out("node node/Main.js", "out/NodeBench.txt")
+
+if reRun:
+	run_save_out("node node/Main.js", "out/NodeBench.txt")
+
 file = open("out/NodeBench.txt", "r")
 line = file.readline()
 while line:
@@ -199,13 +210,14 @@ while line:
 	elif len(values) == 2:
 		benchName = values[0]
 		configuration = values[1]
-		data[benchName + " | node | " + configuration] = mean
+		data[benchName + " | Node | " + configuration] = mean
 	line = file.readline()
 
 file.close()
 
 graphs = {}
 
+print("parsing data...")
 for key, value in data.items():
 	parts = key.split(" | ")
 	if len(parts) != 3:
@@ -227,42 +239,137 @@ for key, value in data.items():
 
 	graphs[graphName][strategy][operation]["mean"] = value
 
+origionalGraphs = copy.deepcopy(graphs)
+
+operationAverages = {}
+print("calculating averages...")
+
+for graphName in list(graphs.keys()):
+	for stratName in list(graphs[graphName].keys()):
+		for operationName in list(graphs[graphName][stratName].keys()):
+			if not graphName in operationAverages:
+				operationAverages[graphName] = {}
+
+			if not operationName in operationAverages[graphName]:
+				operationAverages[graphName][operationName] = {}
+				operationAverages[graphName][operationName]["total"] = 0
+				operationAverages[graphName][operationName]["count"] = 0
+
+			operationAverages[graphName][operationName]["total"] += graphs[graphName][stratName][operationName]["mean"]
+			operationAverages[graphName][operationName]["count"] += 1
+
+lastCount = -1
+for graphName in graphs.keys():
+	for stratName in graphs[graphName].keys():
+		for operationName in graphs[graphName][stratName].keys():
+			count = operationAverages[graphName][operationName]["count"]
+			if lastCount != -1 and lastCount != count:
+				print("Graph " + graphName + " operation " + operationName + " has " + count + " entries, expected " + lastCount)
+				sys.exit(1)
+
+for graphName in operationAverages.keys():
+	for operationName in operationAverages[graphName].keys():
+		operationAverages[graphName][operationName]["average"] = operationAverages[graphName][operationName]["total"] / operationAverages[graphName][operationName]["count"]
+
+print("resolving conflicts...")
+#Makes sure all values for a particular graph are close enough to each other and splits up graphs if not
+def resolveConflicts(graphsToFix):
+
+	for graphName in list(graphs.keys()):
+		minValue = -1
+		if not graphName in graphsToFix:
+			continue
+
+		for stratName in list(graphs[graphName].keys()):
+			for operationName in list(graphs[graphName][stratName].keys()):
+				if minValue == -1 or operationAverages[graphName][operationName]["average"] < minValue:
+					minValue = operationAverages[graphName][operationName]["average"]
+
+		#Keep all values on a graph within a certain range
+		maxAllowed = minValue * 10
+		if graphName[-1:] == ']' and '[' in graphName:
+			currentChar = graphName[-2:-1]
+			graphNamePart = graphName[:-3]
+			nextGraphName = graphNamePart + "[" + chr(ord(currentChar) + 1) + "]"
+		else:
+			newGraphName = graphName + " [A]"
+			nextGraphName = graphName + " [B]"
+			graphs[newGraphName] = graphs[graphName]
+			graphs.pop(graphName)
+
+			operationAverages[newGraphName] = operationAverages[graphName]
+			operationAverages.pop(graphName)
+
+			graphName = newGraphName
+
+		toFix = set()
+		for stratName in list(graphs[graphName].keys()):
+			for operationName in list(graphs[graphName][stratName].keys()):
+				if operationAverages[graphName][operationName]["average"] >= maxAllowed:
+					if not nextGraphName in graphs:
+						graphs[nextGraphName] = {}
+
+					if not nextGraphName in operationAverages:
+						operationAverages[nextGraphName] = {}
+
+					if not stratName in graphs[nextGraphName]:
+						graphs[nextGraphName][stratName] = {}
+
+					if not operationName in operationAverages[nextGraphName]:
+						operationAverages[nextGraphName][operationName] = {}
+
+					operationAverages[nextGraphName][operationName] = operationAverages[graphName][operationName]
+
+					if not operationName in graphs[nextGraphName][stratName]:
+						graphs[nextGraphName][stratName][operationName] = {}
+					graphs[nextGraphName][stratName][operationName]["mean"] = graphs[graphName][stratName][operationName]["mean"]
+
+					graphs[graphName][stratName].pop(operationName)
+					if (len(graphs[graphName][stratName]) == 0):
+						graphs[graphName].pop(stratName)
+					if (len(graphs[graphName]) == 0):
+						graphs.pop(graphName)
+
+					toFix.add(nextGraphName)
+
+		if len(toFix) > 0:
+			resolveConflicts(toFix)
+
+resolveConflicts(graphs.keys())
 
 import plotly.graph_objects as go
 
+print("Adding origional graphs")
+for graphName in origionalGraphs.keys():
+	if not graphName in graphs.keys():
+		graphs[graphName] = origionalGraphs[graphName]
 
+print("plotting data...")
 
 for graphName, strategies in graphs.items():
-	print("graph: " + graphName)
 	plotBars = []
-	lastXAxis = []
+	print("\tinit plot " + graphName)
+
 	for stratName, operations in strategies.items():
-		print("stratName: " + stratName)
 		xAxis = []
 		times = []
 		for operationName, values in operations.items():
-			print("operationName: " + operationName)
 			xAxis.append(operationName)
 			times.append(values["mean"] / 1000000.0)
 
-		if set(xAxis) != set(lastXAxis) and len(lastXAxis) > 0:
-			print("X axies dont match. Expected " + str(lastXAxis) + " but got " + str(xAxis))
-			sys.exit(1)
-		lastXAxis = xAxis
-		print(str(times))
-
 		plotBars.append(go.Bar(name=stratName, x=xAxis, y=times))
 
-	#print("\txaxis: " + xAxis)
 	fig = go.Figure(data=plotBars)
 	# Change the bar mode
 	fig.update_layout(
-		yaxis_type="log",
 		barmode='group',
 		title=graphName + " Performance Test",
-    	xaxis_title="Configurations",
-    	yaxis_title="Time (Milliseconds)"
-    )
-	fig.write_image("out/" + graphName + ".png")
+		xaxis_title="Configurations",
+		yaxis_title="Time (Milliseconds)"
+	)
+
+	fileName = "out/" + graphName + ".png"
+	print("\tsaving " + fileName + "...")
+	fig.write_image(fileName)
 
 
